@@ -11,12 +11,16 @@ on:
 
 permissions:
   contents: read
-  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     name: Test application
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -58,9 +62,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: Check formatting with Black
+        if: github.event_name == 'pull_request'
         run: python -m black --check .
 
       - name: Lint with Ruff
+        if: github.event_name == 'pull_request'
         run: python -m ruff check .
 
       - name: Collect static files
@@ -72,8 +78,12 @@ jobs:
   publish:
     name: Build and publish Docker image
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
