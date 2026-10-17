@@ -60,6 +60,9 @@ jobs:
       - name: Check formatting with Black
         run: python -m black --check .
 
+      - name: Lint with Ruff
+        run: python -m ruff check .
+
       - name: Collect static files
         run: python manage.py collectstatic --noinput
 
