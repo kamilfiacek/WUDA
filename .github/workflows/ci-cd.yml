@@ -72,6 +72,14 @@ jobs:
       - name: Collect static files
         run: python manage.py collectstatic --noinput
 
+      - name: Upload static files artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: django-static-files
+          path: staticfiles/
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Run Django tests
         run: python manage.py test
 
@@ -88,6 +96,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Download static files artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: django-static-files
+          path: staticfiles/
+
+      - name: Verify static files artifact
+        run: |
+          test -d staticfiles
+          test -n "$(find staticfiles -type f -print -quit)"
+          echo "Static files artifact exists and contains files."
 
       - name: Set lowercase image name
         run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
