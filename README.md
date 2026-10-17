@@ -20,22 +20,51 @@ DB_HOST=db
 
 ```bash
 docker compose up --build -d
-docker compose exec web python manage.py migrate
 ```
 
-Otwórz http://localhost.
+Migracje wykonują się automatycznie przy starcie. Otwórz http://localhost/polls. Aby dodać nowe pytania
+poprzez http://localhost/admin/, należy najpierw dodać superużytkownika:
+
+```bash
+docker compose exec web python manage.py createsuperuser
+```
 
 ## Rozwijanie aplikacji lokalnie
 
-Zmień w `.env` `DB_HOST` na `localhost` oraz dodaj `DEBUG=True`, a następnie poprzez konsolę uruchom samą bazę danych i serwer deweloperski Django:
+Zmień w `.env` `DB_HOST` na `127.0.0.1` oraz dodaj `DEBUG=True`, a następnie uruchom samą bazę danych:
 
 ```bash
 docker compose up -d db
+```
+
+Utwórz środowisko wirtualne:
+
+```bash
 py -3.11 -m venv .venv
+```
+
+Aktywuj je:
+
+```bash
 .\.venv\Scripts\Activate.ps1
+```
+
+Zainstaluj zależności:
+
+```bash
 python -m pip install -r requirements.txt
+```
+
+Wykonaj migracje:
+
+```bash
 python manage.py migrate
+```
+
+Uruchom serwer deweloperski:
+
+```bash
 python manage.py runserver
 ```
 
-Otwórz http://127.0.0.1:8000. Instrukcja nie dotyczy wdrożenia produkcyjnego.
+Otwórz http://127.0.0.1:8000/polls. Instrukcja nie dotyczy wdrożenia produkcyjnego.
