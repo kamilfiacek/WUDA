@@ -28,3 +28,11 @@ staticfiles/
 Dockerfile
 .dockerignore
 docker-compose*.yml
+
+**/tests/
+**/tests.py
+**/test_*.py
+**/*_test.py
+
+README*
+pyproject.toml
